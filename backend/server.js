@@ -6,41 +6,54 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
-console.log("FRONTEND_URL =", process.env.FRONTEND_URL);
-console.log("NODE_ENV =", process.env.NODE_ENV);
-console.log("JWT_SECRET =", process.env.JWT_SECRET);
+console.log('FRONTEND_URL =', process.env.FRONTEND_URL);
+console.log('NODE_ENV =', process.env.NODE_ENV);
 
 connectDB();
 
 const app = express();
 
-// Allowed Origins
+// CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://dz-crm-contract.vercel.app',
-  'https://dz-crm-contract-gls3v2orr-dharmit9626-6754s-projects.vercel.app'
+  'https://dz-crm-contract.vercel.app'
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (Postman, curl, mobile apps, etc.)
-      if (!origin) return callback(null, true);
+    origin: (origin, callback) => {
+      // Postman, mobile apps, curl, etc.
+      if (!origin) {
+        return callback(null, true);
+      }
 
+      // Exact match
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
+      // Allow all Vercel preview deployments
+      if (
+        origin.includes('.vercel.app') &&
+        origin.includes('dz-crm-contract')
+      ) {
+        return callback(null, true);
+      }
+
+      console.log('❌ CORS Blocked Origin:', origin);
+
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
@@ -49,15 +62,16 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/leads', require('./routes/leads'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 
-// Health check
+// Health Check
 app.get('/api/health', (req, res) => {
-  res.json({
+  res.status(200).json({
+    success: true,
     status: 'OK',
     message: 'DZ CRM API is running'
   });
 });
 
-// 404 handler
+// 404 Handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -65,7 +79,7 @@ app.use((req, res) => {
   });
 });
 
-// Global error handler
+// Global Error Handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
 
