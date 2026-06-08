@@ -1,267 +1,258 @@
-# DZ Infotech Sales CRM
+## **DZ Infotech Sales CRM** 
 
-A production-ready Sales CRM built for the DZ Infotech sales team to manage contractor leads efficiently.
+A production-ready Customer Relationship Management (CRM) system developed for the DZ Infotech sales team to streamline contractor lead management, follow-up tracking, and sales pipeline monitoring. 
 
----
+The application provides a centralized platform for managing leads, monitoring sales activities, and tracking conversion progress through an intuitive and responsive interface. 
 
-## Tech Stack
+## **Overview** 
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18 + Vite + Tailwind CSS + React Router |
-| Backend | Node.js + Express.js |
-| Database | MongoDB + Mongoose |
-| Auth | JWT + bcryptjs |
+DZ Infotech Sales CRM was built to simplify day-to-day lead management operations. Sales representatives can create, organize, and track contractor leads while maintaining a clear view of follow-up schedules and lead statuses. 
 
----
+The system is designed with a modern full-stack architecture using React, Node.js, Express, and MongoDB, ensuring scalability, maintainability, and a smooth user experience. 
 
-## Project Structure
+## **Features** 
+
+## **Authentication & Security** 
+
+- Secure user registration and login 
+
+- JWT-based authentication 
+
+- Protected routes and session management 
+
+- Password encryption using bcrypt 
+
+## **Lead Management** 
+
+- Create new contractor leads 
+
+- View and manage all leads 
+
+- Update lead information 
+
+- Delete unwanted leads 
+
+- Track lead status and progress 
+
+## **Dashboard Analytics** 
+
+- Total leads overview 
+
+- Today's follow-ups 
+
+- New lead tracking 
+
+- Interested prospects count 
+
+- Demo scheduled count 
+
+- Won deals tracking 
+
+1 
+
+## **Follow-Up Management** 
+
+- Schedule follow-up activities 
+
+- Monitor pending follow-ups 
+
+- Stay organized with lead engagement timelines 
+
+## **User Experience** 
+
+- Clean and responsive design 
+
+- Mobile-friendly interface 
+
+- Fast and intuitive navigation 
+
+- Real-time data updates 
+
+## **Tech Stack** 
+
+## **Frontend** 
+
+- React 18 • Vite 
+
+- React Router DOM 
+
+- Axios • Tailwind CSS 
+
+- Lucide React 
+
+## **Backend** 
+
+- Node.js • Express.js • JWT Authentication • bcrypt.js 
+
+## **Database** 
+
+- MongoDB • Mongoose 
+
+## **Deployment** 
+
+- Frontend: Vercel • Backend: Render • Database: MongoDB Atlas 
+
+## **Project Structure** 
 
 ```
-dz-crm/
+DZ_CRM_Contract/
+│
+├── frontend/
+│   ├── src/
+```
+
+2 
+
+```
+│   ├── public/
+│   └── package.json
+│
 ├── backend/
 │   ├── config/
-│   │   └── db.js                  # MongoDB connection
 │   ├── controllers/
-│   │   ├── authController.js      # Auth logic
-│   │   ├── leadsController.js     # Leads CRUD
-│   │   └── dashboardController.js # Dashboard stats
 │   ├── middleware/
-│   │   └── auth.js                # JWT middleware
 │   ├── models/
-│   │   ├── User.js                # User schema
-│   │   └── Lead.js                # Lead schema
 │   ├── routes/
-│   │   ├── auth.js
-│   │   ├── leads.js
-│   │   └── dashboard.js
-│   ├── .env.example
-│   ├── package.json
 │   └── server.js
 │
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── ui/
-    │   │   │   ├── Badge.jsx       # Status & Priority badges
-    │   │   │   ├── ConfirmDialog.jsx
-    │   │   │   ├── EmptyState.jsx
-    │   │   │   └── Loader.jsx
-    │   │   ├── layout/
-    │   │   │   ├── Layout.jsx      # Sidebar + mobile header
-    │   │   │   └── ProtectedRoute.jsx
-    │   │   ├── leads/
-    │   │   │   └── LeadForm.jsx    # Shared add/edit form
-    │   │   └── dashboard/
-    │   │       ├── FollowUpCard.jsx
-    │   │       └── StatCard.jsx
-    │   ├── contexts/
-    │   │   └── AuthContext.jsx
-    │   ├── pages/
-    │   │   ├── LoginPage.jsx
-    │   │   ├── RegisterPage.jsx
-    │   │   ├── DashboardPage.jsx
-    │   │   ├── LeadsPage.jsx
-    │   │   ├── AddLeadPage.jsx
-    │   │   ├── LeadDetailPage.jsx
-    │   │   ├── EditLeadPage.jsx
-    │   │   └── NotFoundPage.jsx
-    │   ├── services/
-    │   │   └── api.js              # Axios instance + API calls
-    │   ├── utils/
-    │   │   └── constants.js        # Enums, colors, helpers
-    │   ├── App.jsx
-    │   ├── main.jsx
-    │   └── index.css
-    ├── .env.example
-    ├── package.json
-    ├── vite.config.js
-    └── tailwind.config.js
+└── README.md
 ```
 
----
+## **Installation** 
 
-## Prerequisites
+## **Clone Repository** 
 
-- Node.js v18+
-- MongoDB (local or Atlas)
-- npm or yarn
-
----
-
-## Installation & Setup
-
-### 1. Clone / Download the project
-
-```bash
-cd dz-crm
+```
+gitclonehttps://github.com/dharmitMonani/DZ_CRM_Contract.git
+cdDZ_CRM_Contract
 ```
 
-### 2. Setup Backend
+## **Backend Setup** 
 
-```bash
-cd backend
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env
+```
+cdbackend
+npminstall
 ```
 
-Edit `backend/.env`:
-```env
+Create a `.env` file: 
+
+```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/dz-crm
-JWT_SECRET=your_very_secret_key_change_this
-JWT_EXPIRE=7d
 NODE_ENV=development
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRE=7d
+FRONTEND_URL=http://localhost:5173
 ```
 
-### 3. Setup Frontend
+Run backend server: 
 
-```bash
-cd ../frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env
+```
+npmstart
 ```
 
-Edit `frontend/.env`:
-```env
+3 
+
+## **Frontend Setup** 
+
+```
+cdfrontend
+npminstall
+```
+
+Create a `.env` file: 
+
+```
 VITE_API_URL=http://localhost:5000/api
 ```
 
----
+Run frontend: 
 
-## Running the Application
-
-### Development Mode
-
-**Terminal 1 — Backend:**
-```bash
-cd backend
-npm run dev
-# Server starts on http://localhost:5000
+```
+npmrundev
 ```
 
-**Terminal 2 — Frontend:**
-```bash
-cd frontend
-npm run dev
-# App opens on http://localhost:5173
+## **API Endpoints** 
+
+## **Authentication** 
+
+```
+POST /api/auth/register
+POST /api/auth/login
 ```
 
-### First-Time Setup
+## **Leads** 
 
-1. Open http://localhost:5173
-2. Click **Register** to create your account
-3. Login and start adding leads!
-
----
-
-## MongoDB Setup
-
-### Option A: Local MongoDB
-```bash
-# Install MongoDB Community Edition
-# Start MongoDB service
-mongod --dbpath /data/db
-
-# Use URI: mongodb://localhost:27017/dz-crm
+```
+GET    /api/leads
+POST   /api/leads
+PUT    /api/leads/:id
+DELETE /api/leads/:id
 ```
 
-### Option B: MongoDB Atlas (Cloud - Recommended for Production)
-1. Create free cluster at https://cloud.mongodb.com
-2. Get your connection string
-3. Replace `MONGODB_URI` in `.env`
+## **Dashboard** 
 
----
-
-## API Endpoints
-
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register new user |
-| POST | /api/auth/login | Login user |
-| GET | /api/auth/me | Get current user |
-
-### Dashboard
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/dashboard | Stats + today's follow-ups |
-
-### Leads
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/leads | Get leads (search, filter, paginate) |
-| GET | /api/leads/:id | Get single lead |
-| POST | /api/leads | Create lead |
-| PUT | /api/leads/:id | Update lead |
-| DELETE | /api/leads/:id | Delete lead |
-
-**Lead Query Parameters:**
-- `search` — search by company, contact, mobile, city
-- `status` — filter by status
-- `priority` — filter by priority
-- `page` — page number (default: 1)
-- `limit` — items per page (default: 20)
-- `sortBy` — field to sort by
-- `sortOrder` — asc | desc
-
----
-
-## Production Build
-
-### Build Frontend
-```bash
-cd frontend
-npm run build
-# Output: frontend/dist/
+```
+GET /api/dashboard
 ```
 
-### Serve with Node.js (optional)
-```bash
-# In backend/server.js, you can add:
-# app.use(express.static('../frontend/dist'))
-```
+## **Deployment** 
 
----
+## **Frontend** 
 
-## Deployment
+Deployed on Vercel for fast global delivery and seamless continuous deployment. 
 
-### Backend (Railway / Render / VPS)
-1. Set environment variables in your hosting platform
-2. Set `NODE_ENV=production`
-3. Set `FRONTEND_URL=https://yourdomain.com`
-4. Deploy with `npm start`
+## **Backend** 
 
-### Frontend (Vercel / Netlify)
-1. Build command: `npm run build`
-2. Output directory: `dist`
-3. Set `VITE_API_URL=https://your-backend-url.com/api`
+Hosted on Render with automatic deployment from the GitHub repository. 
 
----
+4 
 
-## Features
+## **Database** 
 
-- ✅ JWT Authentication with secure password hashing
-- ✅ Lead pipeline: New → Contacted → Interested → Demo → Won
-- ✅ Today's Follow-ups dashboard (auto-detected)
-- ✅ Priority badges: Cold / Warm / Hot
-- ✅ Communication tracking (Video, Brochure, Proposal)
-- ✅ Search, filter, sort, paginate leads
-- ✅ Mobile-first responsive design
-- ✅ Fast update workflow optimized for 30+ calls/day
-- ✅ Color-coded status badges
-- ✅ Overdue follow-up highlighting
+MongoDB Atlas is used for secure and scalable cloud database management. 
 
----
+## **Development Highlights** 
 
-## Support
+- Full-stack MERN architecture 
 
-DZ Infotech Internal CRM — built for the sales team.
+- JWT authentication implementation 
+
+- RESTful API design 
+
+- Responsive UI development 
+
+- MongoDB integration 
+
+- Production deployment on Vercel and Render 
+
+- Environment-based configuration management 
+
+## **Future Improvements** 
+
+- Role-based access control 
+
+- Lead activity history 
+
+- Email notifications 
+
+- Advanced analytics dashboard 
+
+- Export reports functionality 
+
+- Team performance tracking 
+
+## **Author** 
+
+## **Dharmit Monani** 
+
+GitHub: https://github.com/dharmitMonani 
+
+LinkedIn: https://www.linkedin.com/in/dharmitmonani 
+
+## **License** 
+
+This project was developed as a CRM solution for DZ Infotech and is intended for educational and demonstration purposes. 
+
+5 
+
