@@ -13,40 +13,11 @@ connectDB();
 
 const app = express();
 
-// CORS Configuration
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://dz-crm-contract.vercel.app'
-];
-
+// CORS (Temporary Fix)
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Postman, mobile apps, curl, etc.
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      // Exact match
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // Allow all Vercel preview deployments
-      if (
-        origin.includes('.vercel.app') &&
-        origin.includes('dz-crm-contract')
-      ) {
-        return callback(null, true);
-      }
-
-      console.log('❌ CORS Blocked Origin:', origin);
-
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: true,
+    credentials: true
   })
 );
 
