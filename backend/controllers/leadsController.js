@@ -108,7 +108,7 @@ const createLead = async (req, res) => {
       });
     }
 
-    const lead = await Lead.create({
+    const lead = new Lead({
       companyName,
       contactPerson,
       mobileNumber,
@@ -122,16 +122,17 @@ const createLead = async (req, res) => {
       lastContactDate,
       nextFollowupDate,
       notes,
-      createdBy: req.user._id,
-      // Initial timeline entry — no extra DB round-trip needed
-      activityTimeline: [
-        {
-          action: 'Lead Created',
-          description: `Lead created for ${companyName}`,
-          performedBy: req.user._id
-        }
-      ]
+      createdBy: req.user._id
     });
+
+    // Initial timeline entry — no extra DB round-trip needed
+    lead.activityTimeline.push({
+      action: 'Lead Created',
+      description: `Lead created for ${companyName}`,
+      performedBy: req.user._id
+    });
+
+    await lead.save();
 
     res.status(201).json({ success: true, data: lead });
   } catch (error) {

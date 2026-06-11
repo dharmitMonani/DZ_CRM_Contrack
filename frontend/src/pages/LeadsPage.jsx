@@ -8,6 +8,7 @@ import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { LEAD_STATUSES, LEAD_PRIORITIES, formatDate } from '../utils/constants';
 import toast from 'react-hot-toast';
 import KanbanBoard from '../components/leads/KanbanBoard';
+import * as XLSX from 'xlsx';
 
 const LIMIT = 20;
 
@@ -19,6 +20,7 @@ const LeadsPage = () => {
   const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1 });
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [status, setStatus] = useState(searchParams.get('status') || 'all');
@@ -105,6 +107,51 @@ const LeadsPage = () => {
     }
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    const toastId = toast.loading('Exporting...');
+    try {
+      let exportData = leads;
+      
+      // If there are more leads than currently loaded, fetch them all for export
+      if (pagination.total > leads.length) {
+        const params = { page: 1, limit: 10000, sortBy, sortOrder };
+        if (search) params.search = search;
+        if (status !== 'all') params.status = status;
+        if (priority !== 'all') params.priority = priority;
+        const res = await leadsAPI.getAll(params);
+        exportData = res.data.data;
+      }
+
+      const worksheetData = exportData.map(lead => ({
+        'Company Name': lead.companyName || '-',
+        'Contact Person': lead.contactPerson || '-',
+        'Mobile Number': lead.mobileNumber || '-',
+        'City': lead.city || '-',
+        'Approx Turnover': lead.approxTurnover || '-',
+        'Status': lead.status || '-',
+        'Priority': lead.priority || '-',
+        'Last Contact Date': lead.lastContactDate ? formatDate(lead.lastContactDate) : '-',
+        'Next Follow-up Date': lead.nextFollowupDate ? formatDate(lead.nextFollowupDate) : '-',
+        'Assigned To': lead.assignedTo ? lead.assignedTo.name || lead.assignedTo : '-',
+        'Created Date': lead.createdAt ? formatDate(lead.createdAt) : '-'
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+
+      const dateStr = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `Leads_${dateStr}.xlsx`);
+
+      toast.success('Excel exported successfully', { id: toastId });
+    } catch (error) {
+      toast.error('Failed to export leads', { id: toastId });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const SortIcon = ({ field }) => (
     <span className="text-xs opacity-50 ml-1">
       {sortBy === field ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
@@ -134,6 +181,13 @@ const LeadsPage = () => {
               Board
             </button>
           </div>
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            Export Excel
+          </button>
           <Link to="/leads/add" className="btn-primary text-sm">
             + Add Lead
           </Link>
