@@ -39,14 +39,14 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-600 rounded-2xl shadow-lg mb-4">
             <span className="text-2xl font-black text-white">DZ</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-500 text-sm mt-1">Set up your CRM account</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Create Account</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Set up your CRM account</p>
         </div>
 
         <div className="card p-8">
@@ -110,9 +110,9 @@ const RegisterPage = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-500">
+          <p className="mt-6 text-center text-sm text-gray-500 dark:text-slate-400">
             Already have an account?{' '}
-            <Link to="/login" className="text-brand-600 font-medium hover:underline">
+            <Link to="/login" className="text-brand-600 dark:text-brand-400 font-medium hover:underline">
               Sign In
             </Link>
           </p>

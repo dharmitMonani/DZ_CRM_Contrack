@@ -14,8 +14,7 @@ const KanbanColumn = ({ status, leads }) => {
     },
   });
 
-  // Determine a color or icon based on status
-  const getColumnStyle = (status) => {
+  const getColumnAccent = (status) => {
     switch (status) {
       case 'New Lead': return 'border-t-4 border-blue-500';
       case 'Interested': return 'border-t-4 border-yellow-500';
@@ -27,17 +26,17 @@ const KanbanColumn = ({ status, leads }) => {
   };
 
   return (
-    <div className={`flex flex-col bg-gray-50 rounded-xl min-w-[280px] w-[280px] max-h-full overflow-hidden shrink-0 ${getColumnStyle(status)}`}>
-      <div className="p-3 bg-gray-100 flex justify-between items-center border-b border-gray-200">
-        <h3 className="font-semibold text-gray-700 text-sm">{status}</h3>
-        <span className="bg-gray-200 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">
+    <div className={`flex flex-col bg-gray-50 dark:bg-slate-900 rounded-xl min-w-[280px] w-[280px] max-h-full overflow-hidden shrink-0 border border-gray-200 dark:border-slate-700 ${getColumnAccent(status)}`}>
+      <div className="p-3 bg-gray-100 dark:bg-slate-800 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+        <h3 className="font-semibold text-gray-700 dark:text-slate-200 text-sm">{status}</h3>
+        <span className="bg-gray-200 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs font-medium px-2 py-0.5 rounded-full">
           {leads.length}
         </span>
       </div>
-      
-      <div 
+
+      <div
         ref={setNodeRef}
-        className="flex-1 overflow-y-auto p-3 flex flex-col gap-3 min-h-[150px]"
+        className="flex-1 overflow-y-auto p-3 flex flex-col gap-3 min-h-[150px] scrollbar-thin"
       >
         <SortableContext items={leadIds} strategy={verticalListSortingStrategy}>
           {leads.map((lead) => (

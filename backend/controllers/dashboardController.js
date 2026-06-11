@@ -29,6 +29,7 @@ const getDashboard = async (req, res) => {
       leadsByStatus,
       leadsByPriority,
       leadsByCity,
+      leadsBySource,
       monthlyTrendData
     ] = await Promise.all([
       Lead.countDocuments({ createdBy: userId }),
@@ -62,6 +63,10 @@ const getDashboard = async (req, res) => {
       ]),
       Lead.aggregate([
         { $match: { createdBy: userObjectId } },
+        { $group: { _id: { $ifNull: ["$source", "Other"] }, value: { $sum: 1 } } }
+      ]),
+      Lead.aggregate([
+        { $match: { createdBy: userObjectId } },
         { $group: {
             _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
             value: { $sum: 1 }
@@ -92,6 +97,7 @@ const getDashboard = async (req, res) => {
           leadsByStatus: formatChartData(leadsByStatus),
           leadsByPriority: formatChartData(leadsByPriority),
           leadsByCity: formatChartData(leadsByCity),
+          leadsBySource: formatChartData(leadsBySource),
           monthlyTrend: formatChartData(monthlyTrendData, 'month')
         },
         todayFollowups

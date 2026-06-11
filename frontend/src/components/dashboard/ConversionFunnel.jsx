@@ -6,7 +6,7 @@ const ConversionFunnel = ({ stats }) => {
   const demoScheduled = stats?.demoScheduled || 0;
   const won = stats?.wonDeals || 0;
 
-  const maxVal = Math.max(newLeads, interested, demoScheduled, won, 1); // Avoid division by zero
+  const maxVal = Math.max(newLeads, interested, demoScheduled, won, 1);
 
   const steps = [
     { label: 'New Lead', value: newLeads, color: 'bg-blue-500' },
@@ -19,13 +19,12 @@ const ConversionFunnel = ({ stats }) => {
     <div className="w-full py-4">
       <div className="flex flex-col items-center space-y-2">
         {steps.map((step, index) => {
-          // Calculate width relative to the maximum value, but ensure a minimum width so it looks like a funnel
-          const minWidth = 100 - (index * 20); // 100%, 80%, 60%, 40%
+          const minWidth = 100 - (index * 20);
           const actualWidth = Math.max((step.value / maxVal) * 100, minWidth);
 
           return (
-            <div 
-              key={step.label} 
+            <div
+              key={step.label}
               className={`relative flex items-center justify-center text-white font-medium text-sm rounded-md shadow-sm transition-all duration-500 ${step.color}`}
               style={{ width: `${actualWidth}%`, height: '40px' }}
             >

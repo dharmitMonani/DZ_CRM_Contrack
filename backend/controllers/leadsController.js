@@ -15,6 +15,7 @@ const getLeads = async (req, res) => {
       search,
       status,
       priority,
+      source,
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
@@ -32,6 +33,7 @@ const getLeads = async (req, res) => {
 
     if (status && status !== 'all') query.status = status;
     if (priority && priority !== 'all') query.priority = priority;
+    if (source && source !== 'all') query.source = source;
 
     const sortObj = {};
     sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
@@ -93,6 +95,7 @@ const createLead = async (req, res) => {
       approxTurnover,
       status,
       priority,
+      source,
       promoVideoSent,
       brochureSent,
       proposalSent,
@@ -116,6 +119,7 @@ const createLead = async (req, res) => {
       approxTurnover,
       status,
       priority,
+      source: source || 'Other',
       promoVideoSent,
       brochureSent,
       proposalSent,
@@ -154,7 +158,7 @@ const updateLead = async (req, res) => {
 
     const allowedFields = [
       'companyName', 'contactPerson', 'mobileNumber', 'city', 'approxTurnover',
-      'status', 'priority', 'promoVideoSent', 'brochureSent', 'proposalSent',
+      'status', 'priority', 'source', 'promoVideoSent', 'brochureSent', 'proposalSent',
       'lastContactDate', 'nextFollowupDate', 'notes'
     ];
 
@@ -184,6 +188,15 @@ const updateLead = async (req, res) => {
       timelineEntries.push({
         action: 'Priority Changed',
         description: `Priority changed from "${lead.priority}" to "${setData.priority}"`,
+        performedBy: req.user._id
+      });
+    }
+
+    // 2.5 Source change
+    if (setData.source && setData.source !== lead.source) {
+      timelineEntries.push({
+        action: 'Source Changed',
+        description: `Source changed from "${lead.source || 'Other'}" to "${setData.source}"`,
         performedBy: req.user._id
       });
     }

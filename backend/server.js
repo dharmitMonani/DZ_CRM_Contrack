@@ -6,8 +6,6 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
-console.log('FRONTEND_URL =', process.env.FRONTEND_URL);
-console.log('NODE_ENV =', process.env.NODE_ENV);
 
 connectDB();
 

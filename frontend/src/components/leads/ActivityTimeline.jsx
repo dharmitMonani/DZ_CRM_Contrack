@@ -2,37 +2,42 @@ import React from 'react';
 import { timeAgo, formatDate } from '../../utils/constants';
 
 // ── Action type configuration ─────────────────────────────────────────────────
-// Each action gets a distinct colour and icon so entries are visually scannable.
 const ACTION_CONFIG = {
   'Lead Created': {
     dot:   'bg-green-500',
-    ring:  'ring-green-100',
-    label: 'text-green-700',
+    ring:  'ring-green-100 dark:ring-green-900',
+    label: 'text-green-700 dark:text-green-400',
     icon:  '✦'
   },
   'Status Changed': {
     dot:   'bg-blue-500',
-    ring:  'ring-blue-100',
-    label: 'text-blue-700',
+    ring:  'ring-blue-100 dark:ring-blue-900',
+    label: 'text-blue-700 dark:text-blue-400',
     icon:  '⇄'
   },
   'Priority Changed': {
     dot:   'bg-orange-500',
-    ring:  'ring-orange-100',
-    label: 'text-orange-700',
+    ring:  'ring-orange-100 dark:ring-orange-900',
+    label: 'text-orange-700 dark:text-orange-400',
     icon:  '↑'
   },
   'Follow-up Rescheduled': {
     dot:   'bg-purple-500',
-    ring:  'ring-purple-100',
-    label: 'text-purple-700',
+    ring:  'ring-purple-100 dark:ring-purple-900',
+    label: 'text-purple-700 dark:text-purple-400',
     icon:  '⏰'
   },
   'Lead Updated': {
     dot:   'bg-gray-400',
-    ring:  'ring-gray-100',
-    label: 'text-gray-600',
+    ring:  'ring-gray-100 dark:ring-slate-700',
+    label: 'text-gray-600 dark:text-slate-400',
     icon:  '✎'
+  },
+  'Source Changed': {
+    dot:   'bg-indigo-500',
+    ring:  'ring-indigo-100 dark:ring-indigo-900',
+    label: 'text-indigo-700 dark:text-indigo-400',
+    icon:  '🔗'
   }
 };
 
@@ -44,7 +49,7 @@ const ActivityTimeline = ({ timeline = [] }) => {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-2">
         <span className="text-3xl">📋</span>
-        <p className="text-sm text-gray-400">No activity recorded yet.</p>
+        <p className="text-sm text-gray-400 dark:text-slate-500">No activity recorded yet.</p>
       </div>
     );
   }
@@ -65,7 +70,7 @@ const ActivityTimeline = ({ timeline = [] }) => {
             {/* ── Vertical connector line ── */}
             {!isLast && (
               <div
-                className="absolute left-[15px] top-8 bottom-0 w-px bg-gray-100"
+                className="absolute left-[15px] top-8 bottom-0 w-px bg-gray-100 dark:bg-slate-700"
                 aria-hidden="true"
               />
             )}
@@ -91,19 +96,19 @@ const ActivityTimeline = ({ timeline = [] }) => {
                   {entry.action}
                 </p>
                 <span
-                  className="text-xs text-gray-400 whitespace-nowrap tabular-nums"
+                  className="text-xs text-gray-400 dark:text-slate-500 whitespace-nowrap tabular-nums"
                   title={formatDate(entry.createdAt)}
                 >
                   {timeAgo(entry.createdAt)}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-slate-300 mt-0.5 leading-relaxed">
                 {entry.description}
               </p>
               {entry.performedBy?.name && (
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
                   by{' '}
-                  <span className="font-medium text-gray-500">
+                  <span className="font-medium text-gray-500 dark:text-slate-400">
                     {entry.performedBy.name}
                   </span>
                 </p>

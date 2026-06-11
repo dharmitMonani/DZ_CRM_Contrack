@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LEAD_STATUSES, LEAD_PRIORITIES, toInputDate } from '../../utils/constants';
+import { LEAD_STATUSES, LEAD_PRIORITIES, LEAD_SOURCES, toInputDate } from '../../utils/constants';
 import { Spinner } from '../ui/Loader';
 
 const DEFAULT_FORM = {
@@ -10,6 +10,7 @@ const DEFAULT_FORM = {
   approxTurnover: '',
   status: 'New Lead',
   priority: 'Cold',
+  source: 'Other',
   promoVideoSent: false,
   brochureSent: false,
   proposalSent: false,
@@ -36,11 +37,14 @@ const LeadForm = ({ initialData = {}, onSubmit, loading, submitLabel = 'Save Lea
     onSubmit(form);
   };
 
+  const sectionClass = "card p-5";
+  const sectionTitle = "text-sm font-semibold text-gray-700 dark:text-slate-300 mb-4 uppercase tracking-wide";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Info */}
-      <div className="card p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Contact Information</h3>
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>Contact Information</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="label">Company Name *</label>
@@ -103,10 +107,10 @@ const LeadForm = ({ initialData = {}, onSubmit, loading, submitLabel = 'Save Lea
         </div>
       </div>
 
-      {/* Status & Priority */}
-      <div className="card p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Lead Classification</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Status & Priority & Source */}
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>Lead Classification</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="label">Status</label>
             <select name="status" value={form.status} onChange={handleChange} className="input-field">
@@ -123,12 +127,20 @@ const LeadForm = ({ initialData = {}, onSubmit, loading, submitLabel = 'Save Lea
               ))}
             </select>
           </div>
+          <div>
+            <label className="label">Source</label>
+            <select name="source" value={form.source} onChange={handleChange} className="input-field">
+              {LEAD_SOURCES.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Communication Tracking */}
-      <div className="card p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Communication</h3>
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>Communication</h3>
         <div className="space-y-3">
           {[
             { name: 'promoVideoSent', label: '🎬 Promo Video Sent' },
@@ -141,17 +153,17 @@ const LeadForm = ({ initialData = {}, onSubmit, loading, submitLabel = 'Save Lea
                 name={item.name}
                 checked={form[item.name]}
                 onChange={handleChange}
-                className="w-4 h-4 text-brand-600 rounded border-gray-300 focus:ring-brand-500"
+                className="w-4 h-4 text-brand-600 rounded border-gray-300 dark:border-slate-600 focus:ring-brand-500 dark:bg-slate-700"
               />
-              <span className="text-sm text-gray-700 group-hover:text-gray-900">{item.label}</span>
+              <span className="text-sm text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-slate-100">{item.label}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* Follow-up Dates */}
-      <div className="card p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Follow-up Schedule</h3>
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>Follow-up Schedule</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="label">Last Contact Date</label>
@@ -177,8 +189,8 @@ const LeadForm = ({ initialData = {}, onSubmit, loading, submitLabel = 'Save Lea
       </div>
 
       {/* Notes */}
-      <div className="card p-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Notes</h3>
+      <div className={sectionClass}>
+        <h3 className={sectionTitle}>Notes</h3>
         <textarea
           name="notes"
           value={form.notes}

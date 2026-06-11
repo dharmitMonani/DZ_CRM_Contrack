@@ -48,6 +48,21 @@ const leadSchema = new mongoose.Schema({
     enum: ['Cold', 'Warm', 'Hot'],
     default: 'Cold'
   },
+  source: {
+    type: String,
+    enum: [
+      'Website',
+      'Referral',
+      'LinkedIn',
+      'Instagram',
+      'Facebook',
+      'Cold Call',
+      'Walk-In',
+      'Email Campaign',
+      'Other'
+    ],
+    default: 'Other'
+  },
   // Communication tracking
   promoVideoSent: {
     type: Boolean,

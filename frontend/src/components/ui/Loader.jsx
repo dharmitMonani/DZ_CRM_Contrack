@@ -14,10 +14,10 @@ export const Spinner = ({ size = 'md', className = '' }) => {
 };
 
 export const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gray-50">
+  <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">
     <div className="flex flex-col items-center gap-3">
       <Spinner size="lg" />
-      <p className="text-sm text-gray-500">Loading...</p>
+      <p className="text-sm text-gray-500 dark:text-slate-400">Loading...</p>
     </div>
   </div>
 );

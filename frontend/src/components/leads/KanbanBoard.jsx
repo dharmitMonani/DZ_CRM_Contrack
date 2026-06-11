@@ -73,7 +73,7 @@ const KanbanBoard = ({ leads, onStatusChange }) => {
   };
 
   return (
-    <div className="flex overflow-x-auto pb-4 h-[calc(100vh-220px)] min-h-[500px]">
+    <div className="flex overflow-x-auto pb-4 h-[calc(100vh-220px)] min-h-[500px] scrollbar-thin">
       <div className="flex gap-4 h-full px-1">
         <DndContext
           sensors={sensors}

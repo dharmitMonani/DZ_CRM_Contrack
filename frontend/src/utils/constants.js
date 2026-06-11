@@ -14,6 +14,19 @@ export const LEAD_STATUSES = [
 // Lead priority options
 export const LEAD_PRIORITIES = ['Cold', 'Warm', 'Hot'];
 
+// Lead source options
+export const LEAD_SOURCES = [
+  'Website',
+  'Referral',
+  'LinkedIn',
+  'Instagram',
+  'Facebook',
+  'Cold Call',
+  'Walk-In',
+  'Email Campaign',
+  'Other'
+];
+
 // Status badge color map
 export const STATUS_COLORS = {
   'New Lead':       'bg-gray-100 text-gray-700',
