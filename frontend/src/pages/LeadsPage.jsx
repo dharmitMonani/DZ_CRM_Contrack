@@ -7,6 +7,7 @@ import EmptyState from '../components/ui/EmptyState';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
 import { LEAD_STATUSES, LEAD_PRIORITIES, formatDate } from '../utils/constants';
 import toast from 'react-hot-toast';
+import KanbanBoard from '../components/leads/KanbanBoard';
 
 const LIMIT = 20;
 
@@ -25,13 +26,14 @@ const LeadsPage = () => {
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'));
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
+  const [viewMode, setViewMode] = useState(searchParams.get('view') || 'list');
 
   const searchTimer = useRef(null);
 
   const fetchLeads = useCallback(async () => {
     setLoading(true);
     try {
-      const params = { page, limit: LIMIT, sortBy, sortOrder };
+      const params = { page, limit: viewMode === 'kanban' ? 1000 : LIMIT, sortBy, sortOrder };
       if (search) params.search = search;
       if (status !== 'all') params.status = status;
       if (priority !== 'all') params.priority = priority;
@@ -44,7 +46,7 @@ const LeadsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, status, priority, sortBy, sortOrder]);
+  }, [page, search, status, priority, sortBy, sortOrder, viewMode]);
 
   useEffect(() => {
     fetchLeads();
@@ -57,8 +59,9 @@ const LeadsPage = () => {
     if (status !== 'all') p.status = status;
     if (priority !== 'all') p.priority = priority;
     if (page > 1) p.page = page;
+    if (viewMode === 'kanban') p.view = 'kanban';
     setSearchParams(p, { replace: true });
-  }, [search, status, priority, page]);
+  }, [search, status, priority, page, viewMode]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -89,6 +92,19 @@ const LeadsPage = () => {
     }
   };
 
+  const handleStatusChange = async (leadId, newStatus, oldStatus) => {
+    // Optimistic update
+    setLeads(prev => prev.map(l => l._id === leadId ? { ...l, status: newStatus } : l));
+    try {
+      await leadsAPI.update(leadId, { status: newStatus });
+      toast.success('Status updated');
+    } catch {
+      // Rollback
+      setLeads(prev => prev.map(l => l._id === leadId ? { ...l, status: oldStatus } : l));
+      toast.error('Failed to update status');
+    }
+  };
+
   const SortIcon = ({ field }) => (
     <span className="text-xs opacity-50 ml-1">
       {sortBy === field ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
@@ -103,9 +119,25 @@ const LeadsPage = () => {
           <h1 className="text-2xl font-bold text-gray-900">All Leads</h1>
           <p className="text-sm text-gray-500 mt-0.5">{pagination.total} total leads</p>
         </div>
-        <Link to="/leads/add" className="btn-primary text-sm">
-          + Add Lead
-        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200">
+            <button
+              onClick={() => { setViewMode('list'); setPage(1); }}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              List
+            </button>
+            <button
+              onClick={() => { setViewMode('kanban'); setPage(1); }}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+            >
+              Board
+            </button>
+          </div>
+          <Link to="/leads/add" className="btn-primary text-sm">
+            + Add Lead
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -154,6 +186,8 @@ const LeadsPage = () => {
           actionLabel="Add Lead"
           actionTo="/leads/add"
         />
+      ) : viewMode === 'kanban' ? (
+        <KanbanBoard leads={leads} onStatusChange={handleStatusChange} />
       ) : (
         <>
           {/* Desktop Table */}
@@ -274,7 +308,7 @@ const LeadsPage = () => {
           </div>
 
           {/* Pagination */}
-          {pagination.pages > 1 && (
+          {viewMode === 'list' && pagination.pages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-4">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
