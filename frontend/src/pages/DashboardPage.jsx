@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { dashboardAPI } from '../services/api';
 import StatCard from '../components/dashboard/StatCard';
 import FollowUpCard from '../components/dashboard/FollowUpCard';
+import { LeadsByStatusChart, LeadsByPriorityChart, MonthlyTrendChart, LeadsByCityChart } from '../components/dashboard/AnalyticsCharts';
+import ConversionFunnel from '../components/dashboard/ConversionFunnel';
 import { SectionLoader } from '../components/ui/Loader';
 import EmptyState from '../components/ui/EmptyState';
 import toast from 'react-hot-toast';
@@ -15,6 +17,7 @@ const DashboardPage = () => {
   const fetchDashboard = useCallback(async () => {
     try {
       const res = await dashboardAPI.get();
+      console.log('DASHBOARD API RESPONSE:', res.data.data);
       setData(res.data.data);
     } catch {
       toast.error('Failed to load dashboard');
@@ -46,7 +49,7 @@ const DashboardPage = () => {
       ) : (
         <>
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
             <StatCard
               label="Total Leads"
               value={data?.stats?.totalLeads ?? 0}
@@ -88,6 +91,50 @@ const DashboardPage = () => {
               color="green"
               to="/leads?status=Won"
             />
+            {/* New KPIs */}
+            <StatCard
+              label="Conversion Rate"
+              value={`${data?.stats?.conversionRate ?? 0}%`}
+              icon="📈"
+              color="blue"
+            />
+            <StatCard
+              label="Active Follow-Ups"
+              value={data?.stats?.activeFollowupsCount ?? 0}
+              icon="⏱️"
+              color="orange"
+            />
+            <StatCard
+              label="Hot Leads"
+              value={data?.stats?.hotLeads ?? 0}
+              icon="🔥"
+              color="red"
+              to="/leads?priority=Hot"
+            />
+          </div>
+
+          {/* Analytics Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="card p-5 border border-gray-100 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-4">Conversion Funnel</h3>
+              <ConversionFunnel stats={data?.stats} />
+            </div>
+            <div className="card p-5 border border-gray-100 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-4">Leads by Status</h3>
+              <LeadsByStatusChart data={data?.analytics?.leadsByStatus} />
+            </div>
+            <div className="card p-5 border border-gray-100 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-4">Monthly Lead Trend</h3>
+              <MonthlyTrendChart data={data?.analytics?.monthlyTrend} />
+            </div>
+            <div className="card p-5 border border-gray-100 shadow-sm">
+              <h3 className="font-bold text-gray-900 mb-4">Leads by Priority</h3>
+              <LeadsByPriorityChart data={data?.analytics?.leadsByPriority} />
+            </div>
+            <div className="card p-5 border border-gray-100 shadow-sm lg:col-span-2">
+              <h3 className="font-bold text-gray-900 mb-4">Top Cities</h3>
+              <LeadsByCityChart data={data?.analytics?.leadsByCity} />
+            </div>
           </div>
 
           {/* Today's Follow-ups Section */}
