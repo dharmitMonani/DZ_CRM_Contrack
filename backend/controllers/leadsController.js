@@ -1,5 +1,9 @@
 const Lead = require('../models/Lead');
 
+// Helper: format a Date to "15 Jun 2026" for timeline descriptions
+const fmtDate = (d) =>
+  new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
 // @desc    Get all leads with filter, search, pagination
 // @route   GET /api/leads
 // @access  Private
@@ -55,7 +59,7 @@ const getLeads = async (req, res) => {
   }
 };
 
-// @desc    Get single lead
+// @desc    Get single lead (with timeline user names populated)
 // @route   GET /api/leads/:id
 // @access  Private
 const getLead = async (req, res) => {
@@ -63,7 +67,7 @@ const getLead = async (req, res) => {
     const lead = await Lead.findOne({
       _id: req.params.id,
       createdBy: req.user._id
-    });
+    }).populate('activityTimeline.performedBy', 'name');
 
     if (!lead) {
       return res.status(404).json({ success: false, message: 'Lead not found' });
@@ -118,7 +122,15 @@ const createLead = async (req, res) => {
       lastContactDate,
       nextFollowupDate,
       notes,
-      createdBy: req.user._id
+      createdBy: req.user._id,
+      // Initial timeline entry — no extra DB round-trip needed
+      activityTimeline: [
+        {
+          action: 'Lead Created',
+          description: `Lead created for ${companyName}`,
+          performedBy: req.user._id
+        }
+      ]
     });
 
     res.status(201).json({ success: true, data: lead });
@@ -133,7 +145,7 @@ const createLead = async (req, res) => {
 // @access  Private
 const updateLead = async (req, res) => {
   try {
-    let lead = await Lead.findOne({ _id: req.params.id, createdBy: req.user._id });
+    const lead = await Lead.findOne({ _id: req.params.id, createdBy: req.user._id });
 
     if (!lead) {
       return res.status(404).json({ success: false, message: 'Lead not found' });
@@ -145,20 +157,87 @@ const updateLead = async (req, res) => {
       'lastContactDate', 'nextFollowupDate', 'notes'
     ];
 
-    const updateData = {};
+    // Build $set payload
+    const setData = {};
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
-        updateData[field] = req.body[field];
+        setData[field] = req.body[field];
       }
     });
 
-    lead = await Lead.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    // ── Build timeline entries ──────────────────────────────────────────────
 
-    res.json({ success: true, data: lead });
+    const timelineEntries = [];
+
+    // 1. Status change
+    if (setData.status && setData.status !== lead.status) {
+      timelineEntries.push({
+        action: 'Status Changed',
+        description: `Status changed from "${lead.status}" to "${setData.status}"`,
+        performedBy: req.user._id
+      });
+    }
+
+    // 2. Priority change
+    if (setData.priority && setData.priority !== lead.priority) {
+      timelineEntries.push({
+        action: 'Priority Changed',
+        description: `Priority changed from "${lead.priority}" to "${setData.priority}"`,
+        performedBy: req.user._id
+      });
+    }
+
+    // 3. Follow-up date change
+    if (setData.nextFollowupDate !== undefined) {
+      const oldISO = lead.nextFollowupDate
+        ? new Date(lead.nextFollowupDate).toISOString().split('T')[0]
+        : null;
+      const newISO = setData.nextFollowupDate
+        ? new Date(setData.nextFollowupDate).toISOString().split('T')[0]
+        : null;
+      if (oldISO !== newISO) {
+        const desc = newISO
+          ? `Next follow-up set to ${fmtDate(setData.nextFollowupDate)}`
+          : 'Follow-up date cleared';
+        timelineEntries.push({
+          action: 'Follow-up Rescheduled',
+          description: desc,
+          performedBy: req.user._id
+        });
+      }
+    }
+
+    // 4. Generic "Lead Updated" — fires when other fields change
+    //    (ignored if the only changes are the specific ones above)
+    const genericFields = [
+      'companyName', 'contactPerson', 'mobileNumber', 'city', 'approxTurnover',
+      'promoVideoSent', 'brochureSent', 'proposalSent', 'lastContactDate', 'notes'
+    ];
+    const hasGenericChange = genericFields.some(field => {
+      if (setData[field] === undefined) return false;
+      return String(setData[field]) !== String(lead[field] ?? '');
+    });
+    if (hasGenericChange) {
+      timelineEntries.push({
+        action: 'Lead Updated',
+        description: 'Lead details were updated',
+        performedBy: req.user._id
+      });
+    }
+
+    // ── Single atomic update: $set fields + $push timeline entries ──────────
+    const updateQuery = { $set: setData };
+    if (timelineEntries.length > 0) {
+      updateQuery.$push = { activityTimeline: { $each: timelineEntries } };
+    }
+
+    const updated = await Lead.findByIdAndUpdate(
+      req.params.id,
+      updateQuery,
+      { new: true, runValidators: true }
+    ).populate('activityTimeline.performedBy', 'name');
+
+    res.json({ success: true, data: updated });
   } catch (error) {
     console.error('Update lead error:', error);
     res.status(500).json({ success: false, message: 'Failed to update lead' });

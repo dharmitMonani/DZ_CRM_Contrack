@@ -82,7 +82,16 @@ const leadSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+  // Activity timeline — embedded, newest-last, sorted on read
+  activityTimeline: [
+    {
+      action:      { type: String, required: true },
+      description: { type: String, required: true },
+      performedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      createdAt:   { type: Date, default: Date.now }
+    }
+  ]
 }, {
   timestamps: true
 });

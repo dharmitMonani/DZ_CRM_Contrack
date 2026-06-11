@@ -4,6 +4,7 @@ import { leadsAPI } from '../services/api';
 import { StatusBadge, PriorityBadge } from '../components/ui/Badge';
 import { SectionLoader } from '../components/ui/Loader';
 import ConfirmDialog from '../components/ui/ConfirmDialog';
+import ActivityTimeline from '../components/leads/ActivityTimeline';
 import { formatDate } from '../utils/constants';
 import toast from 'react-hot-toast';
 
@@ -173,6 +174,12 @@ const LeadDetailPage = () => {
           <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{lead.notes}</p>
         </div>
       )}
+
+      {/* Activity Timeline */}
+      <div className="card p-5">
+        <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Activity Timeline</h3>
+        <ActivityTimeline timeline={lead.activityTimeline} />
+      </div>
 
       {/* Meta */}
       <div className="card p-4">
